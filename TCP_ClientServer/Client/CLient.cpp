@@ -9,5 +9,6 @@ enum class CustomMsgTypes : uint32_t
 
 int main()
 {
-	message<CustomMsgTypes> msg;
+	messageBody<CustomMsgTypes> msg;
+	msg.header.id = CustomMsgTypes::FireBullet;
 }

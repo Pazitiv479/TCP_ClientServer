@@ -2,9 +2,10 @@
 
 #include "common.h"
 
+
 //—труктура заголовка сообщени€
-template <typename T> 
-struct messageHeader 
+template <typename T>
+struct messageHeader
 {
 	T id{};
 	uint32_t size = 0;
@@ -24,15 +25,15 @@ struct messageBody
 	}
 
 	// ѕереопределение дл€ совместимости с std::cout - выводит удобочитаемое описание сообщени€
-	friend std::ostream& operator << (std::ostream& os, const message<T>& msg)
+	friend std::ostream& operator << (std::ostream& os, const messageBody<T>& msg)
 	{
 		os << "ID: " << int(msg.header.id) << " Size: " << msg.header.size;
 	}
 
 	// ƒобавл€ет любые простые старые (привычные) типы данных данные в буфер сообщени€.
 	// POD (Plain Old Data) - ѕростой старый (или привычный) тип данных
-	template<typename DataType> 
-	friend message<T>& operator << (message<T>& msg, const DataType& data)
+	template<typename DataType>
+	friend messageBody<T>& operator << (messageBody<T>& msg, const DataType& data)
 	{
 		// ѕровер€ет, что тип добавл€емых данных тривиально копируемый.
 		static_assert(std::is_standard_layout<DataType>::value, "Data is too complex to be pushed into vector");
@@ -56,7 +57,7 @@ struct messageBody
 	// »звлекает любые простые старые (привычные) типы данных данные в буфер сообщени€.
 	// POD (Plain Old Data) - ѕростой старый (или привычный) тип данных
 	template<typename DataType>
-	friend message<T>& operator >> (message<T>& msg, DataType& data)
+	friend messageBody<T>& operator >> (messageBody<T>& msg, DataType& data)
 	{
 		// ѕроверка, что тип извлекаемых данных тривиально копируемый
 		static_assert(std::is_standard_layout<DataType>::value, "Data is too complex to be pulled from vector");
@@ -76,3 +77,5 @@ struct messageBody
 		return msg;
 	}
 };
+
+
