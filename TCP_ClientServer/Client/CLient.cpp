@@ -7,6 +7,18 @@ enum class CustomMsgTypes : uint32_t //Кждый идентификкатор будет состоять из 4 
 	MovePlayer
 };
 
+class CustomClien : public ClientInterface<CustomMsgTypes>
+{
+public:
+	bool FIreBullet(float x, float y)
+	{
+		messageBody<CustomMsgTypes> msg;
+		msg.header.id = CustomMsgTypes::FireBullet;
+		msg << x << y;
+		Send(msg);
+	}
+};
+
 int main()
 {
 	messageBody<CustomMsgTypes> msg;

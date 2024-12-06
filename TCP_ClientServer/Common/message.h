@@ -78,4 +78,24 @@ struct messageBody
 	}
 };
 
+// Предварительн ое объявление класса соединения
+template <typename T>
+class connection;
+
+
+// Структура, котрая покажет серверу от какого клиента пришло сообщение
+template <typename T> 
+struct ownedMessage
+{
+	std::shared_ptr<connection<T>> remote = nullptr;
+	messageBody<T> msg;
+
+	// Функция для вывода в поток при  помощи cout
+	friend std::ostream& operator << (std::ostream& os, const ownedMessage<T>& msg)
+	{
+		os << msg.msg;
+		return os;
+	}
+};
+
 
