@@ -15,7 +15,7 @@ public:
 		messageBody<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::FireBullet;
 		msg << x << y;
-		Send(msg);
+		//Send(msg);
 	}
 };
 

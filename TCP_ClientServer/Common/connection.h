@@ -5,7 +5,7 @@
 #include "message.h"
 
 template <typename T>
-class connection : public std::enable_shared_from_this<connection<T>>
+class Connection : public std::enable_shared_from_this<connection<T>>
 {
 public:
 	connectiob()
