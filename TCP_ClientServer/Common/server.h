@@ -112,7 +112,7 @@ public:
 	}
 
 	// Отправить сообщение конкретному клиенту
-	void MessageClient(std::shared_ptr<connection<T>> client, const message<T>& msg)
+	void MessageClient(std::shared_ptr<connection<T>> client, const messageBody<T>& msg)
 	{
 		// Проверьте, является ли клиент законным...
 		if (client && client->IsConnected())
@@ -136,7 +136,7 @@ public:
 	}
 
 	// Отправить сообщение всем клиентам
-	void MessageAllClients(const message<T>& msg, std::shared_ptr<connection<T>> pIgnoreClient = nullptr)
+	void MessageAllClients(const messageBody<T>& msg, std::shared_ptr<connection<T>> pIgnoreClient = nullptr)
 	{
 		bool bInvalidClientExists = false;
 
@@ -164,8 +164,8 @@ public:
 		// Удаляем мертвых клиентов за один раз - таким образом, мы не делаем недействительным контейнер
 		// при повторном просмотре.
 		if (bInvalidClientExists)
-			m_deqConnections.erase(
-				std::remove(m_deqConnections.begin(), m_deqConnections.end(), nullptr), m_deqConnections.end());
+			deqConnections.erase(
+				std::remove(deqConnections.begin(), deqConnections.end(), nullptr), deqConnections.end());
 	}
 
 	// Заставить сервер отвечать на входящие сообщения
@@ -204,13 +204,13 @@ protected:
 	}
 
 	// Вызывается при поступлении сообщения от конкретного клиента
-	virtual void OnMessage(std::shared_ptr<connection<T>> client, message<T>& msg)
+	virtual void OnMessage(std::shared_ptr<connection<T>> client, messageBody<T>& msg)
 	{
 
 	}
 
 	// Потокобезопасная очередь для входящих пакетов сообщений
-	tsqueue<owned_message<T>> qMessagesIn;
+	tsqueue<ownedMessage<T>> qMessagesIn;
 
 	// Контейнер активных проверенных соединений
 	std::deque<std::shared_ptr<connection<T>>> deqConnections;

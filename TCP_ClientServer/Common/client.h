@@ -9,11 +9,11 @@ template <typename T>
 class ClientInterface
 {
 public:
-	clientInterface()
+	ClientInterface()
 	{
 	}
 
-	virtual ~clientInterface()
+	virtual ~ClientInterface()
 	{
 		// If the client is destroyed, always try and disconnect from server
 		Disconnect();
@@ -24,11 +24,11 @@ public:
 	{
 		try
 		{
-			connection = std::make_unique<connection<T>>();
+			connection = std::make_unique<Connection<T>>();
 
 			// Преобразовать имя хоста/ip-адрес в реальный физический адрес
 			asio::ip::tcp::resolver resolver(context);
-			endpoints = resolver.resolve(host, std::to_string(port));
+			asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
 			//asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
 
 			// Укажите объекту подключения, что он должен подключиться к серверу
@@ -38,7 +38,7 @@ public:
 			//connection = std::make_unique<connection<T>>(connection<T>::owner::client, context, asio::ip::tcp::socket(context), qMessagesIn);
 
 			// Запустить контекстный поток
-			thrContext = std::thread([this]() { m_context.run(); });
+			thrContext = std::thread([this]() { context.run(); });
 		}
 		catch (std::exception& e)
 		{
@@ -56,7 +56,7 @@ public:
 		if (IsConnected())
 		{
 			// ...корректно отключиться от сервера
-			m_connection->Disconnect();
+			connection->Disconnect();
 		}
 
 		// В любом случае, мы также закончили с контекстом asio...				
@@ -94,5 +94,5 @@ protected:
 
 private:
 	// Потокобезопасная очередь входящих сообщений с сервера
-	tsqueue<owned_message<T>> qMessagesIn;
+	tsqueue<ownedMessage<T>> qMessagesIn;
 };

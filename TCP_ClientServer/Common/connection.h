@@ -8,11 +8,11 @@ template <typename T>
 class Connection : public std::enable_shared_from_this<connection<T>>
 {
 public:
-	connectiob()
+	Connection()
 	{
 	}
 
-	virtual ~connection()
+	virtual ~Connection()
 	{
 	}
 
@@ -31,8 +31,8 @@ protected:
 
 	// В этой очереди хранятся все сообщения, которые должны быть отправлены удаленной стороне
 	// этого соединения
-	tsqueue<message<T>> qMessagesOut;
+	tsqueue<messageBody<T>> qMessagesOut;
 
 	// Cсылается на входящую очередь родительского объекта
-	tsqueue<owned_message<T>>& qMessagesIn;
+	tsqueue<ownedMessage<T>>& qMessagesIn;
 };

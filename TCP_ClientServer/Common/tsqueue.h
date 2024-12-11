@@ -6,7 +6,7 @@ class tsqueue
 {
 public:
 	tsqueue() = default;
-	tsqueue(const tsqueue<T>&) = defaul;
+	tsqueue(const tsqueue<T>&) = delete;
 	virtual ~tsqueue() { clear(); }
 
 	// Возвращает и сохраняет ссылку на элемент в начале очереди
@@ -94,4 +94,7 @@ public:
 protected:
 	std::mutex muxQueue; // защита доступа к двусторонней очереди
 	std::deque<T> deqQueue; // двусторонняя очередб (стек)
+
+	std::condition_variable cvBlocking;
+	std::mutex muxBlocking;
 };
