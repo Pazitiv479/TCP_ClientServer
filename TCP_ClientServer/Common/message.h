@@ -78,7 +78,7 @@ struct messageBody
 	}
 };
 
-// Предварительн ое объявление класса соединения
+// Предварительное объявление класса соединения
 template <typename T>
 class connection;
 

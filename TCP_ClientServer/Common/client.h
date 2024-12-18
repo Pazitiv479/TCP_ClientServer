@@ -24,23 +24,20 @@ public:
 	{
 		try
 		{
-			connection = std::make_unique<Connection<T>>();
-
 			// Преобразовать имя хоста/ip-адрес в реальный физический адрес
 			asio::ip::tcp::resolver resolver(context);
 			asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
-			//asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
-
-			// Укажите объекту подключения, что он должен подключиться к серверу
-			connection->ConnectToServer(endpoints);
 
 			//// Создание подключения
-			//connection = std::make_unique<connection<T>>(connection<T>::owner::client, context, asio::ip::tcp::socket(context), qMessagesIn);
+			connection = std::make_unique<connection<T>>(connection<T>::owner::client, context, asio::ip::tcp::socket(context), qMessagesIn);
 
+			// Укажите объекту подключения, что он должен подключиться к серверу
+			connection->ConnectionToServer(endpoints);
+			
 			// Запустить контекстный поток
 			thrContext = std::thread([this]() { context.run(); });
 		}
-		catch (std::exception& e)
+		catch (std::exception &e)
 		{
 			std::cerr << "Client Exception: " << e.what() << "\n";
 			return false;

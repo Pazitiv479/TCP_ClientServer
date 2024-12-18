@@ -1,6 +1,7 @@
 #include <iostream>
 #include <net.h>
 
+//Пользовательские типы сообщений
 enum class CustomMsgTypes : uint32_t
 {
 	ServerAccept,
@@ -10,10 +11,11 @@ enum class CustomMsgTypes : uint32_t
 	ServerMessage,
 };
 
+//Пользовательский серверный класс, наследуемый от серверного интерфейса
 class CustomServer : public ServerInterface<CustomMsgTypes>
-
 {
 public:
+	//Принимает номер порта и создаёт сервнрный интерфейс
 	CustomServer(uint16_t nPort) : ServerInterface<CustomMsgTypes>(nPort)
 	{
 
