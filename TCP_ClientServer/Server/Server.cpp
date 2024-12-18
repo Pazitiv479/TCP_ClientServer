@@ -22,7 +22,7 @@ public:
 	}
 
 protected:
-	virtual bool OnClientConnect(std::shared_ptr<Connection<CustomMsgTypes>> client)
+	virtual bool OnClientConnect(std::shared_ptr<connection<CustomMsgTypes>> client)
 	{
 		/*messageBody<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::ServerAccept;
@@ -31,13 +31,13 @@ protected:
 	}
 
 	// Called when a client appears to have disconnected
-	virtual void OnClientDisconnect(std::shared_ptr<Connection<CustomMsgTypes>> client)
+	virtual void OnClientDisconnect(std::shared_ptr<connection<CustomMsgTypes>> client)
 	{
 		//std::cout << "Removing client [" << client->GetID() << "]\n";
 	}
 
 	// Called when a message arrives
-	virtual void OnMessage(std::shared_ptr<Connection<CustomMsgTypes>> client, messageBody<CustomMsgTypes>& msg)
+	virtual void OnMessage(std::shared_ptr<connection<CustomMsgTypes>> client, messageBody<CustomMsgTypes>& msg)
 	{
 		//switch (msg.header.id)
 		//{

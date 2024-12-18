@@ -27,22 +27,25 @@ public:
 			// Преобразовать имя хоста/ip-адрес в реальный физический адрес
 			asio::ip::tcp::resolver resolver(context);
 			asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
-
+			
 			//// Создание подключения
-			connection = std::make_unique<connection<T>>(connection<T>::owner::client, context, asio::ip::tcp::socket(context), qMessagesIn);
+			m_connection = std::make_unique<connection<T>>(
+				connection<T>::owner::client, 
+				context, asio::ip::tcp::socket(context), 
+				qMessagesIn);
 
 			// Укажите объекту подключения, что он должен подключиться к серверу
-			connection->ConnectionToServer(endpoints);
-			
+			m_connection->ConnectionToServer(endpoints);
+
 			// Запустить контекстный поток
 			thrContext = std::thread([this]() { context.run(); });
 		}
-		catch (std::exception &e)
+		catch (const std::exception& e)
 		{
-			std::cerr << "Client Exception: " << e.what() << "\n";
+			std::cerr << "Client Exception: " << /*e.what() <<*/ "\n";
 			return false;
 		}
-
+		
 		return false;
 	}
 
@@ -53,7 +56,7 @@ public:
 		if (IsConnected())
 		{
 			// ...корректно отключиться от сервера
-			connection->Disconnect();
+			m_connection->Disconnect();
 		}
 
 		// В любом случае, мы также закончили с контекстом asio...				
@@ -63,14 +66,14 @@ public:
 			thrContext.join();
 
 		// Уничтожить объект подключения
-		connection.release();
+		m_connection.release();
 	}
 
 	// Проверка подключения к серверу
 	bool IsConnected()
 	{
-		if (connection)
-			return connection->IsConnected();
+		if (m_connection)
+			return m_connection->IsConnected();
 		else
 			return false;
 	}
@@ -87,7 +90,7 @@ protected:
 	// ...но нуждается в собственном потоке для выполнения своих рабочих команд
 	std::thread thrContext;
 	// У клиента есть единственный экземпляр объекта "connection", который обрабатывает передачу данных
-	std::unique_ptr<connection<T>> connection;
+	std::unique_ptr<connection<T>> m_connection;
 
 private:
 	// Потокобезопасная очередь входящих сообщений с сервера

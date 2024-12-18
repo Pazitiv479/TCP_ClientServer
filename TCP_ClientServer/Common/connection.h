@@ -5,7 +5,7 @@
 #include "message.h"
 
 template <typename T>
-class Connection : public std::enable_shared_from_this<connection<T>>
+class connection : public std::enable_shared_from_this<connection<T>>
 {
 public:
 	// Соединение "принадлежит" либо серверу, либо клиенту, и его
@@ -18,13 +18,13 @@ public:
 
 	// Конструктор: Укажите владельца, подключитесь к контексту, передайте сокет
 	//				Укажите ссылку на очередь входящих сообщений
-	Connection(owner parent, asio::io_context& asioContext, asio::ip::tcp::socket socket, tsqueue<ownedMessage<T>>& qIn)
+	connection(owner parent, asio::io_context& asioContext, asio::ip::tcp::socket socket, tsqueue<ownedMessage<T>>& qIn)
 		: asioContext(asioContext), socket(std::move(socket)), qMessagesIn(qIn)
 	{
 		nOwnerType = parent;
 	}
 
-	virtual ~Connection()
+	virtual ~connection()
 	{
 	}
 
@@ -64,7 +64,7 @@ public:
 		}
 	}
 	
-	bool Disconnectrd()
+	void Disconnect()
 	{
 		if (IsConnected())
 			asio::post(asioContext, [this]() { socket.close(); });
@@ -105,7 +105,7 @@ private:
 		// поэтому выделите буфер передачи, достаточно большой для его хранения. Фактически,
 		// мы создадим сообщение во "временном" объекте messageBdy, поскольку с ним 
 		// удобно работать.
-		asio::async_read(socket, asio::buffer(&msgTemporaryIn.header, sizeof(messageHeader<T>))),
+		asio::async_read(socket, asio::buffer(&msgTemporaryIn.header, sizeof(messageHeader<T>)),
 			[this](std::error_code ec, std::size_t length)
 			{
 				if (!ec)
@@ -132,7 +132,7 @@ private:
 					std::cout << "[" << id << "] Read Header Fail.\n";
 					socket.close();
 				}
-			};
+			});
 	}
 
 	// ASYNC - Prime context ready to read a message body
