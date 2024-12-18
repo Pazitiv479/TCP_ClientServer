@@ -84,6 +84,13 @@ public:
 		return qMessagesIn;
 	}
 
+	// Отправить сообщение на сервер
+	void Send(const messageBody<T>& msg)
+	{
+		if (IsConnected())
+			m_connection->Send(msg);
+	}
+
 protected:
 	// контекст asio обрабатывает передачу данных...
 	asio::io_context context;

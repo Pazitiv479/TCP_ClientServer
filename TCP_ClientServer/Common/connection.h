@@ -77,7 +77,7 @@ public:
 
 	// ASYNC - отправка сообщени€, соединени€ выполн€ютс€ один к одному, поэтому указывать цель не нужно,
 	// дл€ клиента целью €вл€етс€ сервер, и наоборот
-	bool Send(const messageBody<T>& msg)
+	void Send(const messageBody<T>& msg)
 	{
 		asio::post(asioContext,
 			[this, msg]()

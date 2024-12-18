@@ -74,30 +74,30 @@ public:
 					// ќтображать некоторую полезную(?) информацию
 					std::cout << "[SERVER] New Connection: " << socket.remote_endpoint() << "\n";
 
-					//// —оздайте новое соединение дл€ работы с этим клиентом
-					//std::shared_ptr<connection<T>> newconn =
-					//	std::make_shared<connection<T>>(connection<T>::owner::server,
-					//		asioContext, std::move(socket), qMessagesIn);
+					// —оздайте новое соединение дл€ работы с этим клиентом
+					std::shared_ptr<connection<T>> newconn =
+						std::make_shared<connection<T>>(connection<T>::owner::server,
+							asioContext, std::move(socket), qMessagesIn);
 
-					//// ƒайте серверу пользовател€ возможность запретить подключение
-					//if (OnClientConnect(newconn))
-					//{
-					//	// ѕодключение разрешено, поэтому добавл€йте в контейнер новые подключени€
-					//	deqConnections.push_back(std::move(newconn));
+					// ƒайте серверу пользовател€ возможность запретить подключение
+					if (OnClientConnect(newconn))
+					{
+						// ѕодключение разрешено, поэтому добавл€йте в контейнер новые подключени€
+						deqConnections.push_back(std::move(newconn));
 
-					//	// » это очень важно! «адайте задачу контексту соединени€
-					//	// asio сидеть и ждать поступлени€ байтов!
-					//	deqConnections.back()->ConnectToClient(nIDCounter++);
+						// » это очень важно! «адайте задачу контексту соединени€
+						// asio сидеть и ждать поступлени€ байтов!
+						deqConnections.back()->ConnectToClient(nIDCounter++);
 
-					//	std::cout << "[" << deqConnections.back()->GetID() << "] Connection Approved\n";
-					//}
-					//else
-					//{
-					//	std::cout << "[-----] Connection Denied\n";
+						std::cout << "[" << deqConnections.back()->GetID() << "] Connection Approved\n";
+					}
+					else
+					{
+						std::cout << "[-----] Connection Denied\n";
 
-					//	// —оединение выйдет за пределы области видимости без каких-либо ожидающих выполнени€ задач, поэтому
-					//	// будет автоматически удалено из-за чудесных интеллектуальных указателей
-					//}
+						// —оединение выйдет за пределы области видимости без каких-либо ожидающих выполнени€ задач, поэтому
+						// будет автоматически удалено из-за чудесных интеллектуальных указателей
+					}
 				}
 				else
 				{
