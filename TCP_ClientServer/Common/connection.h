@@ -4,6 +4,7 @@
 #include "tsqueue.h"
 #include "message.h"
 
+//Класс conection, наследуемый от умного указателя
 template <typename T>
 class connection : public std::enable_shared_from_this<connection<T>>
 {

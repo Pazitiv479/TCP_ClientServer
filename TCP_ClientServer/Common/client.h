@@ -42,7 +42,7 @@ public:
 		}
 		catch (const std::exception& e)
 		{
-			std::cerr << "Client Exception: " << /*e.what() <<*/ "\n";
+			std::cerr << "Client Exception: " << e.what() << "\n";
 			return false;
 		}
 		
@@ -97,7 +97,7 @@ protected:
 	// ...но нуждается в собственном потоке для выполнения своих рабочих команд
 	std::thread thrContext;
 	// У клиента есть единственный экземпляр объекта "connection", который обрабатывает передачу данных
-	std::unique_ptr<connection<T>> m_connection;
+	std::unique_ptr<сonnection<T>> m_connection;
 
 private:
 	// Потокобезопасная очередь входящих сообщений с сервера

@@ -85,6 +85,15 @@ int main()
 					std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count() << "\n";
 				}
 				break;
+
+				case CustomMsgTypes::ServerMessage:
+				{
+					// Сервер ответил на запрос ping	
+					uint32_t clientID;
+					msg >> clientID;
+					std::cout << "Hello from [" << clientID << "]\n";
+				}
+				break;
 				}
 			}
 		}

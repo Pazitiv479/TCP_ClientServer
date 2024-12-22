@@ -93,7 +93,7 @@ public:
 
 protected:
 	std::mutex muxQueue; // защита доступа к двусторонней очереди
-	std::deque<T> deqQueue; // двусторонняя очередб (стек)
+	std::deque<T> deqQueue; // двусторонняя очередь (стек)
 
 	std::condition_variable cvBlocking;
 	std::mutex muxBlocking;

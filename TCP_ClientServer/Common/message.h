@@ -15,7 +15,7 @@ struct messageHeader
 template <typename T>
 struct messageBody
 {
-	messageHeader<T> header;
+	messageHeader<T> header{};
 	std::vector<uint8_t> body; //uint8_t - для работы с байтами, std::vector хранит необработанные байты данных
 
 	// Возвращает размер всего пакета сообщения в байтах
@@ -28,6 +28,7 @@ struct messageBody
 	friend std::ostream& operator << (std::ostream& os, const messageBody<T>& msg)
 	{
 		os << "ID: " << int(msg.header.id) << " Size: " << msg.header.size;
+		return os;
 	}
 
 	// Добавляет любые простые старые (привычные) типы данных данные в буфер сообщения.
@@ -83,8 +84,8 @@ struct messageBody
 // на клиенте владельцем будет сервер.
 
 // Предварительное объявление класса соединения
-template <typename T>
-class connection;
+//template <typename T>
+//class Сonnection;
 
 
 // Структура, котрая покажет серверу от какого клиента пришло сообщение

@@ -30,13 +30,13 @@ protected:
 		return true;
 	}
 
-	// Called when a client appears to have disconnected
+	// Вызывается, когда кажется, что клиент отключился
 	virtual void OnClientDisconnect(std::shared_ptr<connection<CustomMsgTypes>> client)
 	{
 		std::cout << "Removing client [" << client->GetID() << "]\n";
 	}
 
-	// Called when a message arrives
+	// Вызывается при поступлении сообщения
 	virtual void OnMessage(std::shared_ptr<connection<CustomMsgTypes>> client, messageBody<CustomMsgTypes>& msg)
 	{
 		switch (msg.header.id)
@@ -69,7 +69,7 @@ int main()
 
 	while (1)
 	{
-		server.Update();
+		server.Update(-1, true);
 	}
 
 	return 0;
