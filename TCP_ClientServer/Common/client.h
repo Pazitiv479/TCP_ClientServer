@@ -1,105 +1,108 @@
 #pragma once
 
 #include "common.h"
-#include "tsqueue.h"
-#include "message.h"
-#include "connection.h"
+//#include "tsqueue.h"
+//#include "message.h"
+//#include "connection.h"
 
-template <typename T>
-class ClientInterface
+namespace net
 {
-public:
-	ClientInterface()
+	template <typename T>
+	class ClientInterface
 	{
-	}
-
-	virtual ~ClientInterface()
-	{
-		// If the client is destroyed, always try and disconnect from server
-		Disconnect();
-	}
-
-	// Подключиться к серверу, указав имя хоста/ip-адрес и порт
-	bool Connect(const std::string& host, const uint16_t port)
-	{
-		try
+	public:
+		ClientInterface()
 		{
-			// Преобразовать имя хоста/ip-адрес в реальный физический адрес
-			asio::ip::tcp::resolver resolver(context);
-			asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
-			
-			//// Создание подключения
-			m_connection = std::make_unique<connection<T>>(
-				connection<T>::owner::client, 
-				context, asio::ip::tcp::socket(context), 
-				qMessagesIn);
-
-			// Укажите объекту подключения, что он должен подключиться к серверу
-			m_connection->ConnectionToServer(endpoints);
-
-			// Запустить контекстный поток
-			thrContext = std::thread([this]() { context.run(); });
 		}
-		catch (const std::exception& e)
+
+		virtual ~ClientInterface()
 		{
-			std::cerr << "Client Exception: " << e.what() << "\n";
+			// If the client is destroyed, always try and disconnect from server
+			Disconnect();
+		}
+
+		// Подключиться к серверу, указав имя хоста/ip-адрес и порт
+		bool Connect(const std::string& host, const uint16_t port)
+		{
+			try
+			{
+				// Преобразовать имя хоста/ip-адрес в реальный физический адрес
+				asio::ip::tcp::resolver resolver(context);
+				asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
+
+				//// Создание подключения
+				m_connection = std::make_unique<connection<T>>(
+					connection<T>::owner::client,
+					context, asio::ip::tcp::socket(context),
+					qMessagesIn);
+
+				// Укажите объекту подключения, что он должен подключиться к серверу
+				m_connection->ConnectionToServer(endpoints);
+
+				// Запустить контекстный поток
+				thrContext = std::thread([this]() { context.run(); });
+			}
+			catch (const std::exception& e)
+			{
+				std::cerr << "Client Exception: " << e.what() << "\n";
+				return false;
+			}
+
 			return false;
 		}
-		
-		return false;
-	}
 
-	// Отключиться от сервера
-	void Disconnect()
-	{
-		// Если соединение существует, и тогда оно подключено...
-		if (IsConnected())
+		// Отключиться от сервера
+		void Disconnect()
 		{
-			// ...корректно отключиться от сервера
-			m_connection->Disconnect();
+			// Если соединение существует, и тогда оно подключено...
+			if (IsConnected())
+			{
+				// ...корректно отключиться от сервера
+				m_connection->Disconnect();
+			}
+
+			// В любом случае, мы также закончили с контекстом asio...				
+			context.stop();
+			// ...и его нить
+			if (thrContext.joinable())
+				thrContext.join();
+
+			// Уничтожить объект подключения
+			m_connection.release();
 		}
 
-		// В любом случае, мы также закончили с контекстом asio...				
-		context.stop();
-		// ...и его нить
-		if (thrContext.joinable())
-			thrContext.join();
+		// Проверка подключения к серверу
+		bool IsConnected()
+		{
+			if (m_connection)
+				return m_connection->IsConnected();
+			else
+				return false;
+		}
 
-		// Уничтожить объект подключения
-		m_connection.release();
-	}
+		// Получить очередь сообщений с сервера
+		tsqueue<ownedMessage<T>>& Incoming()
+		{
+			return qMessagesIn;
+		}
 
-	// Проверка подключения к серверу
-	bool IsConnected()
-	{
-		if (m_connection)
-			return m_connection->IsConnected();
-		else
-			return false;
-	}
+		// Отправить сообщение на сервер
+		void Send(const messageBody<T>& msg)
+		{
+			if (IsConnected())
+				m_connection->Send(msg);
+		}
 
-	// Получить очередь сообщений с сервера
-	tsqueue<ownedMessage<T>>& Incoming()
-	{
-		return qMessagesIn;
-	}
+	protected:
+		// контекст asio обрабатывает передачу данных...
+		asio::io_context context;
+		// ...но нуждается в собственном потоке для выполнения своих рабочих команд
+		std::thread thrContext;
+		// У клиента есть единственный экземпляр объекта "connection", который обрабатывает передачу данных
+		std::unique_ptr<connection<T>> m_connection;
 
-	// Отправить сообщение на сервер
-	void Send(const messageBody<T>& msg)
-	{
-		if (IsConnected())
-			m_connection->Send(msg);
-	}
-
-protected:
-	// контекст asio обрабатывает передачу данных...
-	asio::io_context context;
-	// ...но нуждается в собственном потоке для выполнения своих рабочих команд
-	std::thread thrContext;
-	// У клиента есть единственный экземпляр объекта "connection", который обрабатывает передачу данных
-	std::unique_ptr<сonnection<T>> m_connection;
-
-private:
-	// Потокобезопасная очередь входящих сообщений с сервера
-	tsqueue<ownedMessage<T>> qMessagesIn;
-};
+	private:
+		// Потокобезопасная очередь входящих сообщений с сервера
+		tsqueue<ownedMessage<T>> qMessagesIn;
+	};
+}

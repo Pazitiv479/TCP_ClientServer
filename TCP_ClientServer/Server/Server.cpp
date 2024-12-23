@@ -12,32 +12,32 @@ enum class CustomMsgTypes : uint32_t
 };
 
 //Пользовательский серверный класс, наследуемый от серверного интерфейса
-class CustomServer : public ServerInterface<CustomMsgTypes>
+class CustomServer : public net::ServerInterface<CustomMsgTypes>
 {
 public:
 	//Принимает номер порта и создаёт сервнрный интерфейс
-	CustomServer(uint16_t nPort) : ServerInterface<CustomMsgTypes>(nPort)
+	CustomServer(uint16_t nPort) : net::ServerInterface<CustomMsgTypes>(nPort)
 	{
 
 	}
 
 protected:
-	virtual bool OnClientConnect(std::shared_ptr<connection<CustomMsgTypes>> client)
+	virtual bool OnClientConnect(std::shared_ptr<net::connection<CustomMsgTypes>> client)
 	{
-		messageBody<CustomMsgTypes> msg;
+		net::messageBody<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::ServerAccept;
 		client->Send(msg);
 		return true;
 	}
 
 	// Вызывается, когда кажется, что клиент отключился
-	virtual void OnClientDisconnect(std::shared_ptr<connection<CustomMsgTypes>> client)
+	virtual void OnClientDisconnect(std::shared_ptr<net::connection<CustomMsgTypes>> client)
 	{
 		std::cout << "Removing client [" << client->GetID() << "]\n";
 	}
 
 	// Вызывается при поступлении сообщения
-	virtual void OnMessage(std::shared_ptr<connection<CustomMsgTypes>> client, messageBody<CustomMsgTypes>& msg)
+	virtual void OnMessage(std::shared_ptr<net::connection<CustomMsgTypes>> client, net::messageBody<CustomMsgTypes>& msg)
 	{
 		switch (msg.header.id)
 		{
@@ -52,7 +52,7 @@ protected:
 		{
 			std::cout << "[" << client->GetID() << "]: Message All\n";
 
-			messageBody<CustomMsgTypes> msg;
+			net::messageBody<CustomMsgTypes> msg;
 			msg.header.id = CustomMsgTypes::ServerMessage;
 			msg << client->GetID();
 			MessageAllClients(msg, client);

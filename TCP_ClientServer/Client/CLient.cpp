@@ -11,12 +11,12 @@ enum class CustomMsgTypes : uint32_t
 	ServerMessage,
 };
 
-class CustomClien : public ClientInterface<CustomMsgTypes>
+class CustomClien : public net::ClientInterface<CustomMsgTypes>
 {
 public:
 	void PingServer()
 	{
-		messageBody<CustomMsgTypes> msg;
+		net::messageBody<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::ServerPing;
 
 		std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
@@ -27,7 +27,7 @@ public:
 
 	void MessageAll()
 	{
-		messageBody<CustomMsgTypes> msg;
+		net::messageBody<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::MessageAll;
 		Send(msg);
 	}
